@@ -202,7 +202,7 @@
       }
       .toucharrows {
         position: absolute;
-        height: min(30dvh, 30vw);
+        height: min(40dvh, 40vw);
         aspect-ratio: 1;
         left: 10vw;
         bottom: 10vh;
@@ -241,7 +241,7 @@
         aspect-ratio: 1;
         background-color: rgba(255, 255, 255, 0.265);
         right: 10vw;
-        bottom: 10vh;
+        bottom: 20vh;
         border-radius: 50%;
         display: flex;
         justify-content: center;
@@ -407,6 +407,9 @@
       }
       .sidebutton:first-child {
         margin-top: auto;
+      }
+      .restartbutton {
+        display: none;
       }
       .sidemenudarkscreen {
         z-index: 640;
@@ -618,9 +621,9 @@
       </svg>
     </div>
     <div class="sidemenu">
-      <div class="sidebutton " onclick="window.location.reload()">Main menu</div>
+      <div class="sidebutton" onclick="mainmenu()">Main menu</div>
       <div class="sidebutton mutebutton" onclick="muteunmute(this)">Mute</div>
-      <div class="sidebutton " onclick="restart()">Restart</div>
+      <div class="sidebutton restartbutton" onclick="restart()">Restart</div>
       <div class="sidebutton" onclick="showtouchcontrols()">Touch controls</div>
     </div>
     <div class="sidemenudarkscreen" onclick="hidesidemenu(this)"></div>
@@ -925,26 +928,34 @@
       }
       //start menu
       let startmenu = localStorage.getItem("startmenu");
-      if (startmenu == "t") {
-        document.querySelector(".startmenu").style.display = "block";
-      } else {
+      if (startmenu == "f") {
         document.querySelector(".startmenu").style.display = "none";
         rungame = true;
         animate();
+      } else {
+        document.querySelector(".startmenu").style.display = "block";
       }
       localStorage.setItem("startmenu", "t");
-      // 
+      //
       function restart() {
         localStorage.setItem("startmenu", "f");
+        localStorage.setItem("loading", "f");
+        localStorage.setItem("restartbuttonflag", "f");
         window.location.reload();
       }
-      //
+      // main menu
+      function mainmenu() {
+        localStorage.setItem("loading", "f");
+        window.location.reload();
+      }
+      // start button
       function start(value) {
         setTimeout(() => {
           rungame = true;
           animate();
           value.parentElement.style.display = "none";
         }, 700);
+        document.querySelector(".restartbutton").style.display = "grid";
         // audio
         if (allowaudio) {
           let startsound = document.createElement("audio");
@@ -952,6 +963,14 @@
           startsound.play();
         }
       }
+      //
+      let restartbuttonflag = localStorage.getItem("restartbuttonflag");
+      if (restartbuttonflag == "f") {
+        document.querySelector(".restartbutton").style.display = "grid";
+      } else {
+        document.querySelector(".restartbutton").style.display = "none";
+      }
+      localStorage.setItem("restartbuttonflag", "t");
 
       // check win loose
       let endmenu = document.querySelector(".endmenu");
@@ -1121,11 +1140,17 @@
       });
 
       // loading
-      document.body.onload = () => {
-        setTimeout(() => {
-          document.querySelector(".loadingscreen").style.display = "none";
-        }, 2000);
-      };
+      let loadingflag = localStorage.getItem("loading");
+      if (loadingflag == "f") {
+        document.querySelector(".loadingscreen").style.display = "none";
+      } else {
+        document.body.onload = () => {
+          setTimeout(() => {
+            document.querySelector(".loadingscreen").style.display = "none";
+          }, 2000);
+        };
+      }
+      localStorage.setItem("loading", "t");
     </script>
   </body>
 </html>
