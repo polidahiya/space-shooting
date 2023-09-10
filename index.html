@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Space war</title>
     <style>
       body {
         height: 100dvh;
@@ -191,6 +191,62 @@
         width: 100%;
         border-radius: 30px;
       }
+      /* touchcontrols */
+      .touchcontrolsbox {
+        position: absolute;
+        height: 100dvh;
+        width: 100vw;
+        color: rgb(0, 191, 255);
+        z-index: 400;
+        display: none;
+      }
+      .toucharrows {
+        position: absolute;
+        height: min(30dvh, 30vw);
+        aspect-ratio: 1;
+        left: 10vw;
+        bottom: 10vh;
+      }
+      .lefttouchbutton {
+        position: absolute;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.265);
+        height: 40%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+      }
+      .touchup {
+        left: 50%;
+        transform: translate(-50%);
+      }
+      .touchdown {
+        left: 50%;
+        bottom: 0;
+        transform: translate(-50%);
+      }
+      .touchleft {
+        top: 50%;
+        transform: translate(0%, -50%);
+      }
+      .touchright {
+        right: 0;
+        top: 50%;
+        transform: translate(0%, -50%);
+      }
+      .touchfire {
+        position: absolute;
+        height: min(20dvh, 20vw);
+        aspect-ratio: 1;
+        background-color: rgba(255, 255, 255, 0.265);
+        right: 10vw;
+        bottom: 10vh;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
       /* start menu */
       .startmenu {
         position: absolute;
@@ -202,7 +258,6 @@
         background-image: url("images/startmenuwallapper.jpg");
         background-position: center;
         background-size: 100% 100%;
-        
       }
       .startbutton {
         position: absolute;
@@ -217,15 +272,26 @@
         background-position: center;
         background-size: 100% 100%;
         background-repeat: no-repeat;
-        display:grid;
+        display: grid;
         place-content: center;
         cursor: pointer;
-        clip-path: polygon(4% 20%,17% 0%,87% 0%,100% 20%,100% 80%,88% 100%,38% 100%,33% 93%,10% 93%,3% 80%);
+        clip-path: polygon(
+          4% 20%,
+          17% 0%,
+          87% 0%,
+          100% 20%,
+          100% 80%,
+          88% 100%,
+          38% 100%,
+          33% 93%,
+          10% 93%,
+          3% 80%
+        );
         transition: 0.2s;
         opacity: 0.8;
       }
-      .startbutton:hover{
-        transform:translate(-50%) scale(1.2);
+      .startbutton:hover {
+        transform: translate(-50%) scale(1.2);
       }
       /* end menu */
       .endmenu {
@@ -298,16 +364,69 @@
           transform: rotate(335deg);
         }
       }
-      /* loading */
-      .loadingscreen{
+      /* sidemenu */
+      .sidemenubutton {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        height: 40px;
+        aspect-ratio: 1;
+        object-fit: contain;
+        z-index: 700;
+        transition: 0.4s;
+        cursor: pointer;
+      }
+      .sidemenu {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100dvh;
+        width: 150px;
+        z-index: 650;
+        background-color: rgba(0, 128, 255, 0.877);
+        transition: 0.4s;
+        transform: translateX(-100%);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px 10px;
+        box-sizing: border-box;
+      }
+      .sidebutton {
+        display: grid;
+        place-content: center;
+        color: white;
+        background-color: rgba(0, 191, 255, 0.463);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        padding: 5px 0px;
+        border-radius: 10px;
+        cursor: pointer;
+      }
+      .sidebutton:hover {
+        background-color: rgb(0, 191, 255);
+      }
+      .sidebutton:first-child {
+        margin-top: auto;
+      }
+      .sidemenudarkscreen {
+        z-index: 640;
         height: 100dvh;
         width: 100vw;
-        background-color: rgb(0, 80, 80);
+        background-color: rgba(0, 0, 0, 0.352);
+        position: absolute;
+        display: none;
+      }
+      /* loading */
+      .loadingscreen {
+        height: 100dvh;
+        width: 100vw;
+        background: linear-gradient(45deg, skyblue, blue);
         position: absolute;
         z-index: 800;
         display: grid;
         place-content: center;
         color: aqua;
+        display: none;
       }
     </style>
   </head>
@@ -328,19 +447,199 @@
     <div class="endmenu">
       <div class="endmenubox">
         <div class="message">You win</div>
-        <button class="playagain" onclick="window.location.reload()">Play again</button>
+        <button class="playagain" onclick="restart()">Play again</button>
         <div class="endeff1"></div>
       </div>
     </div>
-    <div class="loadingscreen">
-      Loading...
+    <div class="touchcontrolsbox">
+      <div class="toucharrows">
+        <div class="lefttouchbutton touchup">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M12 6V18M12 6L7 11M12 6L17 11"
+                stroke="#00bfff"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </g>
+          </svg>
+        </div>
+        <div class="lefttouchbutton touchdown">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M12 6V18M12 18L7 13M12 18L17 13"
+                stroke="#00bfff"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </g>
+          </svg>
+        </div>
+        <div class="lefttouchbutton touchleft">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M6 12H18M6 12L11 7M6 12L11 17"
+                stroke="#00bfff"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </g>
+          </svg>
+        </div>
+        <div class="lefttouchbutton touchright">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M6 12H18M18 12L13 7M18 12L13 17"
+                stroke="#00bfff"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <div class="touchfire">
+        <svg
+          version="1.1"
+          id="_x32_"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink"
+          viewBox="-133.12 -133.12 778.24 778.24"
+          xml:space="preserve"
+          fill="#000000"
+          transform="matrix(-1, 0, 0, 1, 0, 0)"
+        >
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g
+            id="SVGRepo_tracerCarrier"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          ></g>
+          <g id="SVGRepo_iconCarrier">
+            <style type="text/css">
+              .st0 {
+                fill: #00bfff;
+              }
+            </style>
+            <g>
+              <path
+                class="st0"
+                d="M509.915,2.067C498.446-9.417,371.29,29.161,331.086,60.974L451.04,180.927 C482.853,140.708,521.415,13.567,509.915,2.067z"
+              ></path>
+              <path
+                class="st0"
+                d="M268.743,122.677l-41.344,10.328L42.211,318.208l12.047,12.063l-16.359,16.344l-12.063-12.047L0.008,360.396 l151.594,151.608l25.844-25.844l-12.063-12.063l16.359-16.359l12.063,12.047l185.188-185.171l10.344-41.359 c0,0,18.703-18.719,48.25-48.234L316.993,74.442C287.461,103.942,268.743,122.677,268.743,122.677z"
+              ></path>
+            </g>
+          </g>
+        </svg>
+      </div>
     </div>
+    <!-- sidemenu -->
+    <div class="sidemenubutton" onclick="showhidesidemenu(this)">
+      <svg
+        viewBox="-2.16 -2.16 28.32 28.32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        stroke="#00fbff"
+      >
+        <g id="SVGRepo_bgCarrier" stroke-width="0">
+          <path
+            transform="translate(-2.16, -2.16), scale(1.77)"
+            fill="#00bfff"
+            d="M9.166.33a2.25 2.25 0 00-2.332 0l-5.25 3.182A2.25 2.25 0 00.5 5.436v5.128a2.25 2.25 0 001.084 1.924l5.25 3.182a2.25 2.25 0 002.332 0l5.25-3.182a2.25 2.25 0 001.084-1.924V5.436a2.25 2.25 0 00-1.084-1.924L9.166.33z"
+            strokewidth="0"
+          ></path>
+        </g>
+        <g
+          id="SVGRepo_tracerCarrier"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></g>
+        <g id="SVGRepo_iconCarrier">
+          <g id="Menu / Menu_Alt_05">
+            <path
+              id="Vector"
+              d="M5 17H13M5 12H19M11 7H19"
+              stroke="#ffffff"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></path>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div class="sidemenu">
+      <div class="sidebutton " onclick="window.location.reload()">Main menu</div>
+      <div class="sidebutton mutebutton" onclick="muteunmute(this)">Mute</div>
+      <div class="sidebutton " onclick="restart()">Restart</div>
+      <div class="sidebutton" onclick="showtouchcontrols()">Touch controls</div>
+    </div>
+    <div class="sidemenudarkscreen" onclick="hidesidemenu(this)"></div>
+    <!-- loading -->
+    <div class="loadingscreen">Loading...</div>
     <script>
       let ship = document.querySelector(".ship");
       let thrust = document.querySelector(".thrust");
       let enemy = document.querySelector(".enemy");
       let ppoweramount = document.querySelector(".ppoweramount");
       let epoweramount = document.querySelector(".epoweramount");
+      // touch control select
+      let touchfire = document.querySelector(".touchfire");
+      let touchup = document.querySelector(".touchup");
+      let touchdown = document.querySelector(".touchdown");
+      let touchleft = document.querySelector(".touchleft");
+      let touchright = document.querySelector(".touchright");
+      //
       let rungame = false;
       let moveleft = false;
       let moveright = false;
@@ -364,6 +663,15 @@
       let controlebullet = 0;
       let ebarray = [];
       let barray = [];
+      let audiovalue = localStorage.getItem("audio");
+      let allowaudio;
+      if (audiovalue == "true") {
+        allowaudio = true;
+        document.querySelector(".mutebutton").innerHTML = "Mute";
+      } else {
+        allowaudio = false;
+        document.querySelector(".mutebutton").innerHTML = "Unmute";
+      }
       document.onkeydown = (e) => {
         if (e.key == "w") {
           movefor = true;
@@ -441,13 +749,14 @@
           barray.push(bullet);
           controlfire = 0;
           // bullet sound
-          let bsound = document.createElement("audio");
-          bsound.src = "sounds/bullet1.mp3";
-          bsound.play();
+          if (allowaudio) {
+            let bsound = document.createElement("audio");
+            bsound.src = "sounds/bullet1.mp3";
+            bsound.play();
+          }
           //
           setTimeout(() => {
             bullet.remove();
-            bsound.remove();
             barray.shift();
           }, 2000);
         }
@@ -477,19 +786,22 @@
             setTimeout(() => {
               collision.remove();
             }, 200);
-            //sound
             barray[i].remove();
-            let eexpsound = document.createElement("audio");
-            eexpsound.src = "sounds/laser hit1.mp3";
-            eexpsound.play();
-            setTimeout(() => {
-              eexpsound.remove();
-            }, 1000);
+            //sound
+            if (allowaudio) {
+              let eexpsound = document.createElement("audio");
+              eexpsound.src = "sounds/laser hit1.mp3";
+              eexpsound.play();
+              setTimeout(() => {
+                eexpsound.remove();
+              }, 1000);
+            }
             // change powerlevel
             powervalues.enemy -= 0.5;
             epoweramount.style.width = powervalues.enemy + "%";
             if (powervalues.enemy <= 20) {
               epoweramount.style.background = "red";
+              epoweramount.style.filter = "hue-rotate(-72deg)";
             }
             checkwinloose();
           }
@@ -527,13 +839,15 @@
           ebullet.style.left = enemypos + enemy.clientWidth / 2 + "px";
           document.body.appendChild(ebullet);
           // sound
-          let eshoot = document.createElement("audio");
-          eshoot.src = "sounds/enemy shoot.mp3";
-          eshoot.play();
-          //
-          setTimeout(() => {
-            eshoot.remove();
-          }, 3000);
+          if (allowaudio) {
+            let eshoot = document.createElement("audio");
+            eshoot.src = "sounds/enemy shoot.mp3";
+            eshoot.play();
+            //
+            setTimeout(() => {
+              eshoot.remove();
+            }, 3000);
+          }
           //
           ebarray.push(ebullet);
           setTimeout(() => {
@@ -588,13 +902,15 @@
               eexplosion.style.filter = "hue-rotate(20deg)";
             }
             // sound
-            let eexpsound = document.createElement("audio");
-            eexpsound.src = "sounds/ebulletsound.wav";
-            eexpsound.play();
-            //
-            setTimeout(() => {
-              eexpsound.remove();
-            }, 3000);
+            if (allowaudio) {
+              let eexpsound = document.createElement("audio");
+              eexpsound.src = "sounds/ebulletsound.wav";
+              eexpsound.play();
+              //
+              setTimeout(() => {
+                eexpsound.remove();
+              }, 3000);
+            }
             // change powerlevel
             powervalues.player -= 10;
             ppoweramount.style.width = powervalues.player + "%";
@@ -608,18 +924,35 @@
           requestAnimationFrame(animate);
         }
       }
-      // 
-      function start(value){
-       setTimeout(()=>{
+      //start menu
+      let startmenu = localStorage.getItem("startmenu");
+      if (startmenu == "t") {
+        document.querySelector(".startmenu").style.display = "block";
+      } else {
+        document.querySelector(".startmenu").style.display = "none";
         rungame = true;
         animate();
-        value.parentElement.style.display="none"
-       },700)
+      }
+      localStorage.setItem("startmenu", "t");
+      // 
+      function restart() {
+        localStorage.setItem("startmenu", "f");
+        window.location.reload();
+      }
+      //
+      function start(value) {
+        setTimeout(() => {
+          rungame = true;
+          animate();
+          value.parentElement.style.display = "none";
+        }, 700);
         // audio
-        let startsound=document.createElement("audio")
-        startsound.src="sounds/strart button hover.wav"
-        startsound.play()
-      };
+        if (allowaudio) {
+          let startsound = document.createElement("audio");
+          startsound.src = "sounds/strart button hover.wav";
+          startsound.play();
+        }
+      }
 
       // check win loose
       let endmenu = document.querySelector(".endmenu");
@@ -663,20 +996,137 @@
             }, 500);
           }, 500);
         }, 2000);
-        // 
-        let fexp=document.createElement("audio")
-        fexp.src="sounds/final explosion.mp3"
-        fexp.play()
-        setTimeout(()=>{
-          fexp.remove()
-        },8000)
+        //
+        if (allowaudio) {
+          let fexp = document.createElement("audio");
+          fexp.src = "sounds/final explosion.mp3";
+          fexp.play();
+          setTimeout(() => {
+            fexp.remove();
+          }, 8000);
+        }
       }
+      // showhide sidemenu
+      let sidemenuflag = true;
+      function showhidesidemenu(value) {
+        if (sidemenuflag) {
+          document.querySelector(".sidemenu").style.transform =
+            "translateX(0%)";
+          value.style.transform = "translateX(90px)";
+          //
+          document.querySelector(".sidemenudarkscreen").style.display = "block";
+          sidemenuflag = false;
+        } else {
+          document.querySelector(".sidemenu").style.transform =
+            "translateX(-100%)";
+          value.style.transform = "translateX(0px)";
+          //
+          document.querySelector(".sidemenudarkscreen").style.display = "none";
+          sidemenuflag = true;
+        }
+        // audio
+        if (allowaudio) {
+          let startsound = document.createElement("audio");
+          startsound.src = "sounds/strart button hover.wav";
+          startsound.play();
+        }
+      }
+      // hide side menu dark screen
+      function hidesidemenu(value) {
+        value.style.display = "none";
+        showhidesidemenu(document.querySelector(".sidemenubutton"));
+      }
+      // mute unmute
+      function muteunmute(value) {
+        audiovalue = localStorage.getItem("audio");
+        if (audiovalue == "true") {
+          allowaudio = false;
+          value.innerHTML = "Unmute";
+          localStorage.setItem("audio", "false");
+        } else {
+          allowaudio = true;
+          value.innerHTML = "Mute";
+          localStorage.setItem("audio", "true");
+        }
+      }
+      // show touch controls
+      let touchcontrolsdata = localStorage.getItem("touchcontrols");
+      if (touchcontrolsdata == "true") {
+        document.querySelector(".touchcontrolsbox").style.display = "block";
+      } else {
+        document.querySelector(".touchcontrolsbox").style.display = "none";
+      }
+      function showtouchcontrols() {
+        let touchcontrolsdata = localStorage.getItem("touchcontrols");
+        if (touchcontrolsdata == "true") {
+          document.querySelector(".touchcontrolsbox").style.display = "none";
+          localStorage.setItem("touchcontrols", false);
+        } else {
+          document.querySelector(".touchcontrolsbox").style.display = "block";
+          localStorage.setItem("touchcontrols", true);
+        }
+      }
+      // touch controls
+      // fire
+      touchfire.addEventListener("touchstart", (e) => {
+        isfiring = true;
+        e.preventDefault();
+      });
+      touchfire.addEventListener("touchend", (e) => {
+        isfiring = false;
+        e.preventDefault();
+      });
+      // up
+      touchup.addEventListener("touchstart", (e) => {
+        movefor = true;
+        thrust.style.height = "50%";
+        e.preventDefault();
+      });
+      touchup.addEventListener("touchend", (e) => {
+        movefor = false;
+        thrust.style.height = "30%";
+        e.preventDefault();
+      });
+      // down
+      touchdown.addEventListener("touchstart", (e) => {
+        moveback = true;
+        thrust.style.height = "20%";
+        e.preventDefault();
+      });
+      touchdown.addEventListener("touchend", (e) => {
+        moveback = false;
+        thrust.style.height = "30%";
+        e.preventDefault();
+      });
+      // left
+      touchleft.addEventListener("touchstart", (e) => {
+        moveleft = true;
+        ship.style.transform = " translate(-50%)  rotateY(50deg)";
+        e.preventDefault();
+      });
+      touchleft.addEventListener("touchend", (e) => {
+        moveleft = false;
+        ship.style.transform = " translate(-50%) rotateZ(0deg) rotateY(0deg)";
+        e.preventDefault();
+      });
+      // right
+      touchright.addEventListener("touchstart", (e) => {
+        moveright = true;
+        ship.style.transform = " translate(-50%) rotateY(-50deg)";
+        e.preventDefault();
+      });
+      touchright.addEventListener("touchend", (e) => {
+        moveright = false;
+        ship.style.transform = " translate(-50%) rotateZ(0deg) rotateY(0deg)";
+        e.preventDefault();
+      });
+
       // loading
-      document.body.onload=()=>{
-        setTimeout(()=>{
-          document.querySelector(".loadingscreen").style.display="none"
-        },2000)
-      }
+      document.body.onload = () => {
+        setTimeout(() => {
+          document.querySelector(".loadingscreen").style.display = "none";
+        }, 2000);
+      };
     </script>
   </body>
 </html>
