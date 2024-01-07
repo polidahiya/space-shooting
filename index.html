@@ -13,7 +13,6 @@
         background-position: center;
         background-size: cover;
         overflow: hidden;
-        user-select: none;
       }
       .ship {
         height: 100px;
@@ -696,6 +695,10 @@
         if (e.key == " ") {
           isfiring = true;
         }
+        // 
+        if (e.key == "Escape") {
+          showhidesidemenu(document.querySelector(".sidemenubutton"))
+        }
       };
       document.onkeyup = (e) => {
         if (e.key == "w") {
@@ -720,7 +723,11 @@
         }
       };
       //
+      let paused = false;
       function animate() {
+        if (paused) {
+          return;
+        }
         if (movefor && shippos.y > 200) {
           shippos.y -= speed;
           ship.style.top = shippos.y + "px";
@@ -757,11 +764,6 @@
             bsound.src = "sounds/bullet1.mp3";
             bsound.play();
           }
-          //
-          setTimeout(() => {
-            bullet.remove();
-            barray.shift();
-          }, 2000);
         }
         // bullet collision detection
         for (let i = 0; i < barray.length; i++) {
@@ -853,10 +855,6 @@
           }
           //
           ebarray.push(ebullet);
-          setTimeout(() => {
-            ebullet.remove();
-            ebarray.shift();
-          }, 8000);
           controlebullet = 0;
         }
         //enemy bulet collision detection
@@ -1028,6 +1026,7 @@
       // showhide sidemenu
       let sidemenuflag = true;
       function showhidesidemenu(value) {
+        togglepause();
         if (sidemenuflag) {
           document.querySelector(".sidemenu").style.transform =
             "translateX(0%)";
@@ -1152,6 +1151,44 @@
         };
       }
       localStorage.setItem("loading", "t");
+      // pause game
+      function togglepause() {
+        if (paused) {
+          paused = false;
+          document.querySelectorAll(".bullet").forEach((item) => {
+            item.style.animationPlayState = "running";
+          });
+          document.querySelectorAll(".ebullet").forEach((item) => {
+            item.style.animationPlayState = "running";
+          });
+          document.querySelector(".thrust").style.animationPlayState = "running";
+          animate();
+        } else {
+          paused = true;
+          document.querySelectorAll(".bullet").forEach((item) => {
+            item.style.animationPlayState = "paused";
+          });
+          document.querySelectorAll(".ebullet").forEach((item) => {
+            item.style.animationPlayState = "paused";
+          });
+          document.querySelector(".thrust").style.animationPlayState = "paused";
+        }
+      }
+      // remove bullets
+      setInterval(() => {
+        barray.forEach((item) => {
+          if (item.getBoundingClientRect().top < 0) {
+            item.remove();
+            barray.shift();
+          }
+        });
+        ebarray.forEach((item) => {
+          if (item.getBoundingClientRect().top > window.innerHeight) {
+            item.remove();
+            ebarray.shift();
+          }
+        });
+      }, 2000);
     </script>
   </body>
 </html>
