@@ -9,7 +9,7 @@
         height: 100dvh;
         width: 100vw;
         margin: 0;
-        background-image: url(images/milky-way-starry-sky-night-sky-star-956981.jpeg);
+        background-image: url(https://wallpapers.com/images/featured/space-sjryfre8k8f6i3ge.jpg);
         background-position: center;
         background-size: cover;
         overflow: hidden;
@@ -642,7 +642,6 @@
       let touchleft = document.querySelector(".touchleft");
       let touchright = document.querySelector(".touchright");
       //
-      let rungame = false;
       let moveleft = false;
       let moveright = false;
       let movefor = false;
@@ -667,6 +666,7 @@
       let barray = [];
       let audiovalue = localStorage.getItem("audio");
       let allowaudio;
+      let onmenu = true;
       if (audiovalue == "true") {
         allowaudio = true;
         document.querySelector(".mutebutton").innerHTML = "Mute";
@@ -695,9 +695,9 @@
         if (e.key == " ") {
           isfiring = true;
         }
-        // 
+        //
         if (e.key == "Escape") {
-          showhidesidemenu(document.querySelector(".sidemenubutton"))
+          showhidesidemenu(document.querySelector(".sidemenubutton"));
         }
       };
       document.onkeyup = (e) => {
@@ -724,10 +724,21 @@
       };
       //
       let paused = false;
+      //
+      // animation fn
+      //
       function animate() {
         if (paused) {
           return;
         }
+        moveship();
+        shootfn();
+        collisiondetection();
+        requestAnimationFrame(animate);
+      }
+      // moveship function
+      function moveship() {
+        // player move
         if (movefor && shippos.y > 200) {
           shippos.y -= speed;
           ship.style.top = shippos.y + "px";
@@ -748,23 +759,33 @@
           shippos.x += speed;
           ship.style.left = shippos.x + "px";
         }
-        // firing
-        controlfire++;
-        if (isfiring && controlfire > 10) {
-          let bullet = document.createElement("div");
-          bullet.classList.add("bullet");
-          bullet.style.top = shippos.y + ship.clientHeight / 2 + "px";
-          bullet.style.left = shippos.x - bullet.clientWidth / 2 + "px";
-          document.body.appendChild(bullet);
-          barray.push(bullet);
-          controlfire = 0;
-          // bullet sound
-          if (allowaudio) {
-            let bsound = document.createElement("audio");
-            bsound.src = "sounds/bullet1.mp3";
-            bsound.play();
+        // enemy movement
+        controlenemymov++;
+        if (controlenemymov > 50) {
+          if (Math.random() > 0.5) {
+            switchenemymov = !switchenemymov;
+          }
+          controlenemymov = 0;
+        }
+        if (switchenemymov) {
+          if (enemypos < window.innerWidth - enemy.clientWidth) {
+            enemypos += enemyspeed;
+          }
+        } else {
+          if (enemypos > 0) {
+            enemypos -= enemyspeed;
           }
         }
+        if (
+          enemypos == window.innerWidth - enemy.clientWidth - 3 ||
+          enemypos == 3
+        ) {
+          switchenemymov = !switchenemymov;
+        }
+        enemy.style.left = enemypos + "px";
+      }
+      // collision detection
+      function collisiondetection() {
         // bullet collision detection
         for (let i = 0; i < barray.length; i++) {
           if (
@@ -810,52 +831,6 @@
             }
             checkwinloose();
           }
-        }
-        // enemy movement
-        controlenemymov++;
-        if (controlenemymov > 50) {
-          if (Math.random() > 0.5) {
-            switchenemymov = !switchenemymov;
-          }
-          controlenemymov = 0;
-        }
-        if (switchenemymov) {
-          if (enemypos < window.innerWidth - enemy.clientWidth) {
-            enemypos += enemyspeed;
-          }
-        } else {
-          if (enemypos > 0) {
-            enemypos -= enemyspeed;
-          }
-        }
-        if (
-          enemypos == window.innerWidth - enemy.clientWidth - 3 ||
-          enemypos == 3
-        ) {
-          switchenemymov = !switchenemymov;
-        }
-        enemy.style.left = enemypos + "px";
-        // enemy shoot
-        controlebullet++;
-        if (controlebullet > 150) {
-          let ebullet = document.createElement("div");
-          ebullet.classList.add("ebullet");
-          ebullet.classList.add("ebullet" + Math.floor(Math.random() * 5));
-          ebullet.style.left = enemypos + enemy.clientWidth / 2 + "px";
-          document.body.appendChild(ebullet);
-          // sound
-          if (allowaudio) {
-            let eshoot = document.createElement("audio");
-            eshoot.src = "sounds/enemy shoot.mp3";
-            eshoot.play();
-            //
-            setTimeout(() => {
-              eshoot.remove();
-            }, 3000);
-          }
-          //
-          ebarray.push(ebullet);
-          controlebullet = 0;
         }
         //enemy bulet collision detection
         for (let i = 0; i < ebarray.length; i++) {
@@ -921,16 +896,55 @@
             checkwinloose();
           }
         }
-        if (rungame) {
-          requestAnimationFrame(animate);
+      }
+      // shoot functions
+      function shootfn() {
+        // player firing
+        controlfire++;
+        if (isfiring && controlfire > 10) {
+          let bullet = document.createElement("div");
+          bullet.classList.add("bullet");
+          bullet.style.top = shippos.y + ship.clientHeight / 2 + "px";
+          bullet.style.left = shippos.x - bullet.clientWidth / 2 + "px";
+          document.body.appendChild(bullet);
+          barray.push(bullet);
+          controlfire = 0;
+          // bullet sound
+          if (allowaudio) {
+            let bsound = document.createElement("audio");
+            bsound.src = "sounds/bullet1.mp3";
+            bsound.play();
+          }
+        }
+        // enemy shoot
+        controlebullet++;
+        if (controlebullet > 150) {
+          let ebullet = document.createElement("div");
+          ebullet.classList.add("ebullet");
+          ebullet.classList.add("ebullet" + Math.floor(Math.random() * 5));
+          ebullet.style.left = enemypos + enemy.clientWidth / 2 + "px";
+          document.body.appendChild(ebullet);
+          // sound
+          if (allowaudio) {
+            let eshoot = document.createElement("audio");
+            eshoot.src = "sounds/enemy shoot.mp3";
+            eshoot.play();
+            //
+            setTimeout(() => {
+              eshoot.remove();
+            }, 3000);
+          }
+          //
+          ebarray.push(ebullet);
+          controlebullet = 0;
         }
       }
       //start menu
       let startmenu = localStorage.getItem("startmenu");
       if (startmenu == "f") {
         document.querySelector(".startmenu").style.display = "none";
-        rungame = true;
         animate();
+        onmenu = false;
       } else {
         document.querySelector(".startmenu").style.display = "block";
       }
@@ -949,8 +963,8 @@
       }
       // start button
       function start(value) {
+        onmenu = false;
         setTimeout(() => {
-          rungame = true;
           animate();
           value.parentElement.style.display = "none";
         }, 700);
@@ -978,14 +992,14 @@
       let playagain = document.querySelector(".playagain");
       function checkwinloose() {
         if (powervalues.player <= 0) {
-          rungame = false;
           ship.style.display = "none";
           finalmenu("You loose");
+          togglepause();
         }
         if (powervalues.enemy <= 0) {
-          rungame = false;
           enemy.style.display = "none";
           finalmenu("You win");
+          togglepause();
           //
           let bigexplosion = document.createElement("div");
           bigexplosion.classList.add("eexplosion");
@@ -1026,7 +1040,6 @@
       // showhide sidemenu
       let sidemenuflag = true;
       function showhidesidemenu(value) {
-        togglepause();
         if (sidemenuflag) {
           document.querySelector(".sidemenu").style.transform =
             "translateX(0%)";
@@ -1034,6 +1047,10 @@
           //
           document.querySelector(".sidemenudarkscreen").style.display = "block";
           sidemenuflag = false;
+          if (!onmenu) {
+            paused = false;
+            togglepause();
+          }
         } else {
           document.querySelector(".sidemenu").style.transform =
             "translateX(-100%)";
@@ -1041,6 +1058,10 @@
           //
           document.querySelector(".sidemenudarkscreen").style.display = "none";
           sidemenuflag = true;
+          if (!onmenu) {
+            paused = true;
+            togglepause();
+          }
         }
         // audio
         if (allowaudio) {
@@ -1161,7 +1182,8 @@
           document.querySelectorAll(".ebullet").forEach((item) => {
             item.style.animationPlayState = "running";
           });
-          document.querySelector(".thrust").style.animationPlayState = "running";
+          document.querySelector(".thrust").style.animationPlayState =
+            "running";
           animate();
         } else {
           paused = true;
